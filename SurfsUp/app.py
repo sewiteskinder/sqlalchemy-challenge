@@ -121,13 +121,13 @@ def date_start(start):
      # start session and connect to engine
      session = Session(engine)
 
-     # define start date input
-     start_dt = dt.datetime.strptime(start, '%Y-%m-%d')
+     # define start date input to convert to date time object, then to string format
+     start_dt = dt.datetime.strptime(start, '%Y-%m-%d').strftime('%Y-%m-%d')
 
      # create variable to run min, max, and avg temperature for all dates from a specified start date to the end of the data set
-     results = session.query(Measurement.date, func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)) \
-     .filter(func.strftime("%Y-%m-%d", Measurement.date) >= start_dt)\
-     .group_by(Measurement.date).all()
+     results = (session.query(Measurement.date, func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)) \
+     .filter(func.strftime("%Y-%m-%d", Measurement.date) >= (start_dt))\
+     .group_by(Measurement.date).all())
 
      # close session
      session.close()
@@ -152,14 +152,14 @@ def start_end(start, end):
      # start session and connect to engine
      session = Session(engine)
 
-     # define start/end date input
-     start_dt = dt.datetime.strptime(start, '%Y-%m-%d')
-     end_dt = dt.datetime.strptime(end, '%Y-%m-%d')
+     # define start/end date input to convert to date time object, then to string format
+     start_dt = dt.datetime.strptime(start, '%Y-%m-%d').strftime('%Y-%m-%d')
+     end_dt = dt.datetime.strptime(end, '%Y-%m-%d').strftime('%Y-%m-%d')
 
      # create variable to run min, max, and avg temperature for all dates from a specified start date to a specified end date
-     results = session.query(Measurement.date, func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)) \
-     .filter(func.strftime("%Y-%m-%d", Measurement.date) >= start_dt, func.strftime("%Y-%m-%d", Measurement.date) <= end_dt)\
-     .group_by(Measurement.date).all()
+     results = (session.query(Measurement.date, func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)) \
+     .filter(func.strftime("%Y-%m-%d", Measurement.date) >= (start_dt)).filter(func.strftime("%Y-%m-%d", Measurement.date) <= (end_dt))\
+     .group_by(Measurement.date).all())
 
      # close session
      session.close()
@@ -178,4 +178,4 @@ def start_end(start, end):
      return jsonify(temps_range)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="localhost", port=8000, debug=True)
